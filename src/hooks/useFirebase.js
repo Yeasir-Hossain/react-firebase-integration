@@ -1,33 +1,42 @@
 /* eslint-disable no-unused-vars */
-import {useState, useEffect} from 'react';
-import {getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup} from 'firebase/auth'
-import App from '../App';
+import { useState, useEffect } from 'react';
+import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth'
+import app from '../firebase.init';
 
 
-const auth = getAuth(App)
+
+const auth = getAuth(app);
 const googleprovider = new GoogleAuthProvider();
-const useFirebase= () =>{
-    const [user,setUser] = useState({}); 
+const useFirebase = () => {
+    const [user, setUser] = useState({});
 
-    const signInWithGoogle = () =>{
+    const signInWithGoogle = () => {
         signInWithPopup(auth, googleprovider)
-        .then((result) => {
-          const user = result.user;
-          setUser(user);
-          console.log(user);
+            .then((result) => {
+                const user = result.user;
+                setUser(user);
+                console.log(user);
 
-        }).catch((error) => {
-          const errorMessage = error.message;
-          console.log(errorMessage);
-        });
+            }).catch((error) => {
+                const errorMessage = error.message;
+                console.log(errorMessage);
+            });
+    }
+    const handleSignout = () => {
+        signOut(auth)
+            .then(() => { })
     }
 
-    useEffect(()=> {
-        onAuthStateChanged(auth,user=>{
+    useEffect(() => {
+        onAuthStateChanged(auth, user => {
             setUser(user);
         })
-    },[])
+    }, [])
 
-    return {user,signInWithGoogle}
+    return {
+        user,
+        signInWithGoogle,
+        handleSignout
+    }
 }
 export default useFirebase;
